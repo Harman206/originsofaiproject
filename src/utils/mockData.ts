@@ -76,11 +76,17 @@ export const fetchUserDataFromWebhook = async (): Promise<UserProfile> => {
 const CHATBOT_WEBHOOK_URL = import.meta.env.VITE_N8N_CHATBOT_WEBHOOK;
 
 // Function to get the webhook URL (with proxy in development)
-const getWebhookUrl = (originalUrl: string): string => {
+export const getWebhookUrl = (originalUrl: string): string => {
   // In development, use proxy to avoid CORS issues
   if (import.meta.env.DEV && originalUrl) {
-    // Replace the base URL with the proxy path
-    return originalUrl.replace('https://harmanextab.app.n8n.cloud', '/api/n8n');
+    try {
+      const url = new URL(originalUrl);
+      // Replace the base URL (origin) with the proxy path
+      return originalUrl.replace(url.origin, '/api/n8n');
+    } catch (error) {
+      console.error('Invalid webhook URL:', error);
+      return originalUrl; // Return original URL if parsing fails
+    }
   }
   return originalUrl;
 };
