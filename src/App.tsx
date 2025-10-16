@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import UserProfile from './components/UserProfile';
 import DietaryInfo from './components/DietaryInfo';
 import NutritionOverview from './components/NutritionOverview';
