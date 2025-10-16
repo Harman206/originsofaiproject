@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environment Check</title>
+</head>
+<body>
+    <h1>Environment Variables Check</h1>
+    <div id="output"></div>
+
+    <script type="module">
+        const output = document.getElementById('output');
+
+        // Check if import.meta.env works
+        const chatbotUrl = import.meta.env.VITE_N8N_CHATBOT_WEBHOOK;
+        const userDataUrl = import.meta.env.VITE_N8N_USER_DATA_WEBHOOK;
+
+        output.innerHTML = `
+            <p><strong>VITE_N8N_CHATBOT_WEBHOOK:</strong> ${chatbotUrl || 'NOT FOUND'}</p>
+            <p><strong>VITE_N8N_USER_DATA_WEBHOOK:</strong> ${userDataUrl || 'NOT FOUND'}</p>
+            <p><strong>All env vars:</strong></p>
+            <pre>${JSON.stringify(import.meta.env, null, 2)}</pre>
+        `;
+    </script>
+</body>
+</html>
