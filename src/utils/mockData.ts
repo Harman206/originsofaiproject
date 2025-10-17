@@ -98,7 +98,7 @@ export const sendChatMessage = async (message: string): Promise<string> => {
   console.log('Sending message to webhook:', message);
 
   // Check if webhook URL is configured
-  if (!CHATBOT_WEBHOOK_URL || CHATBOT_WEBHOOK_URL === 'https://harmanextab.app.n8n.cloud/webhook/fad1b6f0-6e14-423d-94bd-a3ae16fefb15') {
+  if (!CHATBOT_WEBHOOK_URL) {
     console.warn('N8N webhook URL not configured, using mock responses');
     return getMockResponse(message);
   }
@@ -153,15 +153,25 @@ export const sendChatMessage = async (message: string): Promise<string> => {
     const contentType = response.headers.get('content-type');
     console.log('Response Content-Type:', contentType);
 
+    // Get the raw response text first
+    const rawText = await response.text();
+    console.log('Raw response text:', rawText);
+    console.log('Raw response length:', rawText.length);
+
+    // Check if response is empty
+    if (!rawText || rawText.trim().length === 0) {
+      console.error('❌ Empty response from webhook! Your n8n workflow might be missing a "Respond to Webhook" node.');
+      throw new Error('N8N_EMPTY_RESPONSE');
+    }
+
     // If response is plain text, return it directly
     if (contentType && contentType.includes('text/plain')) {
-      const textResponse = await response.text();
-      console.log('Webhook text response:', textResponse);
-      return textResponse;
+      console.log('Webhook text response:', rawText);
+      return rawText;
     }
 
     // Otherwise, parse as JSON
-    const data = await response.json();
+    const data = JSON.parse(rawText);
     console.log('Webhook response data:', data);
     console.log('Data type:', typeof data);
     console.log('Data keys:', Object.keys(data));
